@@ -46,8 +46,11 @@ def _parse_ffi_str():
             "_declarations": ffi._parser._declarations,
             "_int_constants": ffi._parser._int_constants,
         }
-        with open(cache_location, "wb") as f:
+        # atomically write cache
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        with open(temp_file.name, "wb") as f:
             f.write(pickle.dumps(cache))
+        os.replace(temp_file.name, cache_location)
 
 
 def _find_c_lib():
